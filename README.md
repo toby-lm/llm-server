@@ -29,3 +29,8 @@ To start up specific containers/LLMs, simply list the services you want to start
 ```
 $ docker compose up -d chatui llm-llama2 astrollama
 ```
+
+To stop specific containers, use the Docker `stop` command:
+```
+$ docker stop llm-llama2
+```
