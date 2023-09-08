@@ -1,0 +1,92 @@
+version: '3.x'
+volumes:
+    flowise_data: {}
+    
+services:
+
+  # LLM API: Llama 2 (13B)
+  llm-llama2:
+    image: ghcr.io/huggingface/text-generation-inference:0.9
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['5']
+            capabilities: [gpu]
+    shm_size: '1g'
+    container_name: llm-llama2
+    volumes:
+      - ./data:/data
+    ports:
+      - "8810:80"
+    restart: on-failure
+    environment:
+      HUGGING_FACE_HUB_TOKEN: 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
+    command: "--model-id meta-llama/Llama-2-13b-hf --num-shard 1"
+
+  # LLM API: Llama 2 Chat (13B)
+  llm-llama2-chat:
+    image: ghcr.io/huggingface/text-generation-inference:0.9
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['6']
+            capabilities: [gpu]
+    shm_size: '1g'
+    container_name: llm-llama2-chat
+    volumes:
+      - ./data:/data
+    ports:
+      - "8820:80"
+    restart: on-failure
+    command: "--model-id meta-llama/Llama-2-13b-chat-hf --num-shard 1"
+
+  # LLM API: AstroLlama (7B)
+  llm-astrollama:
+    image: ghcr.io/huggingface/text-generation-inference:0.9
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['7']
+            capabilities: [gpu]
+    shm_size: '1g'
+    container_name: llm-astrollama
+    volumes:
+      - ./data:/data
+    ports:
+      - "8830:80"
+    restart: on-failure
+    command: "--model-id universeTBD/astrollama --num-shard 1"
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - ./data/mongo:/data/db
+    ports:
+      - "27017:27017"
+  
+  chatui:
+    build: 
+      context: ./chat
+      dockerfile: Dockerfile
+    container_name: chatui
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    ports:
+      - "8800:8080"
+    volumes:
+      - ./swagger/openapi.json:/openapi.json
+    environment:
+      SWAGGER_JSON: /openapi.json
