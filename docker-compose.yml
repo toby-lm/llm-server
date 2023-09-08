@@ -42,6 +42,8 @@ services:
     ports:
       - "8820:80"
     restart: on-failure
+    environment:
+      HUGGING_FACE_HUB_TOKEN: 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
     command: "--model-id meta-llama/Llama-2-13b-chat-hf --num-shard 1"
 
   # LLM API: AstroLlama (7B)
@@ -61,6 +63,8 @@ services:
     ports:
       - "8830:80"
     restart: on-failure
+    environment:
+      HUGGING_FACE_HUB_TOKEN: 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
     command: "--model-id universeTBD/astrollama --num-shard 1"
 
   mongodb:
