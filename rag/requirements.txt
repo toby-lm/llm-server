@@ -1,0 +1,10 @@
+text-generation
+pandas
+streamlit
+langchain
+pypdf
+transformers
+tiktoken
+openai
+qdrant-client
+sentence-transformers

@@ -23,7 +23,7 @@ services:
     restart: on-failure
     environment:
       HUGGING_FACE_HUB_TOKEN: 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
-    command: "--model-id meta-llama/Llama-2-13b-hf --num-shard 1"
+    command: "--model-id meta-llama/Llama-2-13b-hf --num-shard 1 --max-total-tokens 4096"
 
   # LLM API: Llama 2 Chat (13B)
   llm-llama2-chat:
@@ -44,7 +44,7 @@ services:
     restart: on-failure
     environment:
       HUGGING_FACE_HUB_TOKEN: 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
-    command: "--model-id meta-llama/Llama-2-13b-chat-hf --num-shard 1"
+    command: "--model-id meta-llama/Llama-2-13b-chat-hf --num-shard 1 --max-total-tokens 4096"
 
   # LLM API: AstroLlama (7B)
   llm-astrollama:
@@ -94,3 +94,17 @@ services:
       - ./swagger/openapi.json:/openapi.json
     environment:
       SWAGGER_JSON: /openapi.json
+
+  qdrant:
+    image: qdrant/qdrant
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+
+  rag:
+    build:
+      context: ./rag
+      dockerfile: Dockerfile
+    container_name: search
+    ports:
+      - "3100:8501"
