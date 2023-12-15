@@ -197,7 +197,8 @@ def add_to_db(uploaded_file):
         embedder,
         url=qdrant_url,
         prefer_grpc=True,
-        collection_name="st_docqa1",
+        collection_name="st_rag",
+        force_recreate=True,
     )
 
     page_progress.empty()
@@ -215,7 +216,7 @@ def generate_response(query_text, model, db):
             model_url = "http://llm-llama2-chat:80/"
         
         # Create retriever interface
-        retriever = db.as_retriever(search_type="mmr", search_kwargs={'k': 3, 'fetch_k': 5})
+        retriever = db.as_retriever(search_type="mmr", search_kwargs={'k': 2, 'fetch_k': 3})
         
         # Instantiate the LLM
         llm = HuggingFaceTextGenInference(
@@ -225,12 +226,14 @@ def generate_response(query_text, model, db):
             top_p=top_p,
             temperature=temperature,
             repetition_penalty=rep_pen,
+        
         )
         
         # Create QA chain
         qa = RetrievalQAWithSourcesChain.from_chain_type(llm=llm, retriever=retriever, chain_type="map_reduce",
                                                          return_source_documents=True)
-        res = qa({"question": query_text})#, return_only_outputs=True)
+        res = qa({"question": query_text}, return_only_outputs=True)
+        st.write(res.keys())
         return res["answer"], res["source_documents"]
 
 # Page title & setup
