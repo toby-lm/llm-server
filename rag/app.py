@@ -226,7 +226,6 @@ def generate_response(query_text, model, db):
             top_p=top_p,
             temperature=temperature,
             repetition_penalty=rep_pen,
-        
         )
         
         # Create QA chain
