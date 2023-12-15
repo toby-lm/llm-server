@@ -67,6 +67,25 @@ services:
       HUGGING_FACE_HUB_TOKEN: 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
     command: "--model-id universeTBD/astrollama --num-shard 1"
 
+  # LLM API: StarCoder (15.5B)
+  llm-starcoder:
+    image: ollama/ollama:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['4']
+            capabilities: [gpu]
+    shm_size: '1g'
+    container_name: llm-starcoder
+    volumes:
+      - ./data:/data
+    ports:
+      - "8840:11434"
+    restart: on-failure
+    entrypoint: ["bash", "-c", "ollama serve && ollama run codellama"]
+
   mongodb:
     image: mongo:latest
     container_name: mongodb
